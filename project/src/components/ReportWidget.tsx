@@ -47,7 +47,7 @@ export default function ReportWidget({ profileId }: { profileId: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-3 py-1 bg-red-600 text-white rounded"
+        className="px-6 py-1 bg-red-600 text-white rounded-xl hover:bg-red-700 shadow-sm transition"
         title="Denunciar este perfil"
       >
         Denunciar

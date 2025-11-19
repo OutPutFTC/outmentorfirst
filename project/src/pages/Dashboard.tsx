@@ -306,31 +306,30 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                       onClick={() => onNavigate('profile', connection.profile.id)}
                       className="border-2 border-gray-200 rounded-xl p-4 hover:border-[#ff8e00] hover:shadow-lg transition cursor-pointer bg-gradient-to-r hover:from-orange-50 hover:to-red-50"
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 flex-1">
-                          <div className="relative">
-                            <div
-                              className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff8e00] to-[#930200] flex items-center justify-center text-white font-bold text-lg overflow-hidden"
-                              style={{ backgroundImage: connection.profile.avatar_url ? `url(${connection.profile.avatar_url})` : undefined, backgroundSize: 'cover' }}
-                            >
-                              {!connection.profile.avatar_url && connection.profile.full_name.charAt(0)}
-                            </div>
-                            {connection.profile.is_mentor_verified && (
-                              <span className="absolute -bottom-0 -right-0 bg-green-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs border-2 border-white" title="Verificado">✓</span>
-                            )}
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <div
+                            className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff8e00] to-[#930200] flex items-center justify-center text-white font-bold text-lg overflow-hidden"
+                            style={{ backgroundImage: connection.profile.avatar_url ? `url(${connection.profile.avatar_url})` : undefined, backgroundSize: 'cover' }}
+                          >
+                            {!connection.profile.avatar_url && connection.profile.full_name.charAt(0)}
                           </div>
-
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-gray-800 truncate flex items-center">
-                              {connection.profile.full_name}
-                              {connection.profile.is_mentor_verified && (
-                                <span className="ml-2 inline-flex items-center bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full">✓ Verificado</span>
-                              )}
-                            </h4>
-                            <p className="text-xs text-gray-500">{connection.profile.city}, {connection.profile.state}</p>
-                          </div>
+                          {connection.profile.is_mentor_verified && (
+                            <span className="absolute -bottom-0 -right-0 bg-green-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs border-2 border-white" title="Verificado">✓</span>
+                          )}
                         </div>
-                        <div className="flex gap-2 ml-2">
+
+                        <div
+                          onClick={() => onNavigate('profile', connection.profile.id)}
+                          className="flex-1 min-w-0 cursor-pointer"
+                        >
+                          <h4 className="font-bold text-gray-800 truncate">
+                            {connection.profile.full_name}
+                          </h4>
+                          <p className="text-xs text-gray-500">{connection.profile.city}, {connection.profile.state}</p>
+                        </div>
+
+                        <div className="flex gap-2 flex-shrink-0">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();

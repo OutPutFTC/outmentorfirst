@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Edit3, Heart, MessageCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Edit3, Heart, MessageCircle, ExternalLink, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import ReportWidget from '../components/ReportWidget';
@@ -18,6 +18,7 @@ interface ProfileData {
   state?: string;
   bio?: string;
   avatar_url?: string;
+  pronouns?: string | null;
   is_mentor_verified?: boolean;
   mentor_details?: any;
   team_details?: any;
@@ -187,12 +188,15 @@ export default function Profile({ profileId, onNavigate }: ProfilePageProps) {
               <div className="flex-1">
                 <div className="flex items-center gap-3">
                   <h1 className="text-4xl font-bold text-gray-800">{profile.full_name}</h1>
-                  {profile.is_mentor_verified && (
-                    <span className="inline-flex items-center bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full">
-                      ✓ Verificado
-                    </span>
-                  )}
                 </div>
+
+                {profile.pronouns && (
+                  <div className="mt-3">
+                    <span className="inline-flex items-center gap-2 bg-gradient-to-r from-[#fff7ef] to-[#fff2e6] text-[#6b3f15] px-3 py-1 rounded-full text-sm font-semibold shadow-sm">
+                      {profile.pronouns}
+                    </span>
+                  </div>
+                )}
 
                 <p className="text-xl text-gray-600 mt-2">
                   {profile.city}, {profile.state}
@@ -212,19 +216,28 @@ export default function Profile({ profileId, onNavigate }: ProfilePageProps) {
               <div className="flex flex-col gap-3">
                 {!isOwnProfile && (
                   <>
-                    <button
-                      onClick={toggleFollow}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
-                        isFollowing
-                          ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                          : 'bg-gradient-to-r from-[#930200] to-[#ff8e00] text-white hover:scale-105'
-                      }`}
-                    >
-                      <Heart size={20} fill={isFollowing ? 'currentColor' : 'none'} />
-                      {isFollowing ? 'Seguindo' : 'Seguir'}
-                    </button>
+                    <div className="flex items-center gap-3">
+                      {profile.is_mentor_verified && (
+                        <span className="inline-flex items-center gap-2 bg-gradient-to-r from-green-400 to-green-600 text-white text-sm px-3 py-1 rounded-full shadow-md">
+                          <CheckCircle size={16} />
+                          <span className="font-semibold">Verificado</span>
+                        </span>
+                      )}
+
+                      <button
+                        onClick={toggleFollow}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${
+                          isFollowing
+                            ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                            : 'bg-gradient-to-r from-[#930200] to-[#ff8e00] text-white hover:scale-105'
+                        }`}
+                      >
+                        <Heart size={20} fill={isFollowing ? 'currentColor' : 'none'} />
+                        {isFollowing ? 'Seguindo' : 'Seguir'}
+                      </button>
+                    </div>
+
                     {currentProfile?.user_type !== profile.user_type && (
-                      // Mensagem button replaced by ReportWidget as requested
                       <ReportWidget profileId={profile.id} />
                     )}
                   </>

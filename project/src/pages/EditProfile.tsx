@@ -14,7 +14,8 @@ export default function EditProfile({ onNavigate }: EditProfileProps) {
     bio: '',
     linkedin_url: '',
     state: '',
-    city: ''
+    city: '',
+    pronouns: ''
   });
   const [mentorData, setMentorData] = useState({
     mentor_ftc: false,
@@ -37,10 +38,24 @@ export default function EditProfile({ onNavigate }: EditProfileProps) {
         bio: profile.bio || '',
         linkedin_url: profile.linkedin_url || '',
         state: profile.state || '',
-        city: profile.city || ''
+        city: profile.city || '',
+        pronouns: profile.pronouns || ''
       });
+      // set pronoun choice
+      if (profile.pronouns) {
+        const known = ['she/her', 'he/him', 'they/them', 'elle/elu', 'Prefer not to say'];
+        if (known.includes(profile.pronouns)) {
+          setPronounChoice(profile.pronouns);
+        } else {
+          setPronounChoice('Custom');
+          setCustomPronouns(profile.pronouns);
+        }
+      }
     }
   }, [profile]);
+
+  const [customPronouns, setCustomPronouns] = useState('');
+  const [pronounChoice, setPronounChoice] = useState('');
 
   const toggleKnowledgeArea = (area: string) => {
     setMentorData(prev => ({
@@ -67,13 +82,17 @@ export default function EditProfile({ onNavigate }: EditProfileProps) {
     setLoading(true);
 
     try {
-      await supabase
-        .from('profiles')
-        .update({
-          ...formData,
-          avatar_url: profile?.avatar_url
-        })
-        .eq('id', profile!.id);
+      const updatePayload: any = {
+        ...formData,
+        avatar_url: profile?.avatar_url
+      };
+
+      // Only include pronouns if this user is a mentor
+      if (profile?.user_type !== 'mentor') {
+        delete updatePayload.pronouns;
+      }
+
+      await supabase.from('profiles').update(updatePayload).eq('id', profile!.id);
 
       if (profile?.user_type === 'mentor') {
         await supabase
@@ -184,6 +203,45 @@ export default function EditProfile({ onNavigate }: EditProfileProps) {
                 className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#ff8e00] focus:border-transparent"
               />
             </div>
+
+            {profile.user_type === 'mentor' && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Pronomes (opcional)</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-2">
+                  {['she/her', 'he/him', 'they/them', 'elle/elu', 'Prefer not to say', 'Custom'].map(option => (
+                    <button
+                      type="button"
+                      key={option}
+                      onClick={() => {
+                        setPronounChoice(option);
+                        if (option !== 'Custom') {
+                          setFormData({ ...formData, pronouns: option });
+                          setCustomPronouns('');
+                        } else {
+                          setFormData({ ...formData, pronouns: '' });
+                        }
+                      }}
+                      className={`px-3 py-2 rounded-lg border ${pronounChoice === option ? 'bg-[#ffefea] border-[#ff8e00]' : 'bg-white border-gray-200'}`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+
+                {pronounChoice === 'Custom' && (
+                  <input
+                    type="text"
+                    placeholder="Digite seus pronomes (ex.: xe/xem)"
+                    value={customPronouns}
+                    onChange={(e) => {
+                      setCustomPronouns(e.target.value);
+                      setFormData({ ...formData, pronouns: e.target.value });
+                    }}
+                    className="w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-[#ff8e00] focus:border-transparent"
+                  />
+                )}
+              </div>
+            )}
 
             {profile.user_type === 'mentor' && (
               <div>
